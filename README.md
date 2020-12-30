@@ -1,11 +1,9 @@
 # Uranium
 
-- [Maven Dependency][gh-package] ([mirror][jitpack])
-- [Javadoc][snapdoc]
+- [Install](doc/INSTALL.md)
+- [Javadoc](https://jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/)
 
-[gh-package]: https://github.com/norswap/uranium/packages/
-[jitpack]: https://jitpack.io/#norswap/uranium
-[snapdoc]: https://jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/
+---
 
 Uranium is a semantic analysis framework. It is used to implement the semantic analysis stage of a compiler or
 interpreter: typing, building lexical and dynamic scopes, verifying and deriving other properties of interest at
