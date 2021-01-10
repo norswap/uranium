@@ -25,8 +25,8 @@ public final class AttributeTreeFormatter<Node>
     private AttributeTreeFormatter (Reactor reactor, Walker<Node> walker) {
         this.reactor = reactor;
         this.walker = walker;
-        walker.register_fallback(WalkVisitType.PRE_VISIT,  this::preVisit);
-        walker.register_fallback(WalkVisitType.POST_VISIT, this::postVisit);
+        walker.registerFallback(WalkVisitType.PRE_VISIT,  this::preVisit);
+        walker.registerFallback(WalkVisitType.POST_VISIT, this::postVisit);
     }
 
     // ---------------------------------------------------------------------------------------------

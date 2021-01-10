@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static norswap.utils.NArrays.index_of;
+import static norswap.utils.NArrays.indexOf;
 import static norswap.utils.Util.cast;
 
 /**
@@ -127,7 +127,7 @@ public final class Rule
 
     /** Called by the Reactor to supply a dependency value. */
     void supply (Attribute dependency, Object value) {
-        int i = NArrays.index_of(dependencies, dependency);
+        int i = NArrays.indexOf(dependencies, dependency);
         dependencyValues[i] = value;
         if (--unsatisfied <= 0) { // could be run multiple times
             unsatisfied = 0;
@@ -145,7 +145,7 @@ public final class Rule
      */
     public <T> T get (Attribute dependency)
     {
-        int i = NArrays.index_of(dependencies, dependency);
+        int i = NArrays.indexOf(dependencies, dependency);
         Object value = dependencyValues[i];
         if (value == null)
             value = dependencyValues[i] = reactor.get(dependency);
@@ -180,7 +180,7 @@ public final class Rule
      */
     public void set (Attribute export, Object value)
     {
-        int i = NArrays.index_of(exports, export);
+        int i = NArrays.indexOf(exports, export);
         exportValues[i] = value;
     }
 
@@ -287,7 +287,7 @@ public final class Rule
         }
 
         for (Attribute attr: affected) {
-            int index = index_of(exports, attr);
+            int index = indexOf(exports, attr);
             if (index >= 0)
                 set(index, error);
             else
