@@ -12,7 +12,7 @@ plugins {
 // === MAIN BUILD DETAILS ==========================================================================
 
 group = "com.norswap"
-version = "1.0.2-ALPHA"
+version = "1.0.3-ALPHA"
 description = "Semantic analysis framework"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -100,7 +100,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.norswap:utils:2.0.1")
+    implementation("com.norswap:utils:2.0.2")
     testImplementation("org.testng:testng:6.14.3")
 }
 

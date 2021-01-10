@@ -52,18 +52,20 @@ public class Reactor
 
     /**
      * Get the value of the given attribute, or null if it hasn't been computed.
+     * The value will be automatically cast to the target type.
      */
-    public final Object get (Attribute attribute) {
-        return attributes.get(attribute);
+    public final <T> T get (Attribute attribute) {
+        return cast(attributes.get(attribute));
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
      * Get the value of the given attribute, or null if it hasn't been computed.
+     * The value will be automatically cast to the target type.
      */
-    public final Object get (Object node, String name) {
-        return attributes.get(new Attribute(node, name));
+    public final <T> T get (Object node, String name) {
+        return cast(attributes.get(new Attribute(node, name)));
     }
 
     // ---------------------------------------------------------------------------------------------
