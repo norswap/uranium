@@ -216,7 +216,7 @@ public class Reactor
                 if (old != null)
                     attributeRedefinitionAttempt(attribute, old, value);
                 else if (value instanceof SemanticError)
-                    reportError((SemanticError) value, attribute);
+                    reportRecordedError((SemanticError) value, attribute);
                 else
                     supplyToDependents(attribute, value);
             }
@@ -250,8 +250,6 @@ public class Reactor
 
     final void reportError (SemanticError error, Attribute affected)
     {
-        if (error.cause == null) errors.add(error);
-
         if (affected == null) {
             if (error.cause != null) errors.add(error); // otherwise these errors would be lost
             return;
@@ -261,6 +259,15 @@ public class Reactor
         if (value != null)
             attributeRedefinitionAttempt(affected, value, error);
 
+        reportRecordedError(error, affected);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    // Logic for reporting an error that has already been stored in `attributes`.
+    private void reportRecordedError (SemanticError error, Attribute affected)
+    {
+        if (error.cause == null) errors.add(error);
         attributes.put(affected, error); // the error becomes the attribute value
         propagateError(error, affected);
     }

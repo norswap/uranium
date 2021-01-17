@@ -12,7 +12,7 @@ plugins {
 // === MAIN BUILD DETAILS ==========================================================================
 
 group = "com.norswap"
-version = "1.0.4-ALPHA"
+version = "1.0.5-ALPHA"
 description = "Semantic analysis framework"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
