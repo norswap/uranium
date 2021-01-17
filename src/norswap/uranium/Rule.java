@@ -167,7 +167,7 @@ public final class Rule
      * performed.
      */
     public <T> T get (int index) {
-        return cast(dependencyValues[0]);
+        return cast(dependencyValues[index]);
     }
 
     // endregion
