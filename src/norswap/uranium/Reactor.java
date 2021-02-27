@@ -1,6 +1,7 @@
 package norswap.uranium;
 
 import norswap.utils.NArrays;
+import norswap.utils.Strings;
 import norswap.utils.multimap.MultiHashMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static norswap.utils.Util.cast;
@@ -343,6 +345,33 @@ public class Reactor
                 if (value != null) rule.supply(dependency, value);
             }
         }
+    }
+
+    // endregion
+    // =============================================================================================
+    // region Reporting
+    // =============================================================================================
+
+    public String reportErrors (Function<Object, String> printLocation)
+    {
+        if (errors.isEmpty())
+            return "";
+
+        StringBuilder b = new StringBuilder();
+
+        for (SemanticError error: errors)
+        {
+            b.append(error.description);
+            Object location = error.location();
+            if (location != null) {
+                b.append("\n");
+                b.append(printLocation.apply(location));
+            }
+            b.append("\n\n");
+        }
+
+        Strings.pop(b, 1); // last newline
+        return b.toString();
     }
 
     // endregion

@@ -53,7 +53,11 @@ public final class SemanticError
     // ---------------------------------------------------------------------------------------------
 
     @Override public String toString() {
-        return "SemanticError(" + description + ")";
+        Object location = location();
+        return String.format("SemanticError(%s)%s", description,
+                location != null
+                    ? String.format("(location: %s)", location)
+                    : "");
     }
 
     // ---------------------------------------------------------------------------------------------
