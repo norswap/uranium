@@ -245,6 +245,11 @@ public final class Rule
      */
     public void error (SemanticError error)
     {
+        if (exports.length == 0) {
+            reactor.reportError(error, null);
+            return;
+        }
+
         for (int i = 0; i < exports.length; i++) {
             exportValues[i] = error;
         }
