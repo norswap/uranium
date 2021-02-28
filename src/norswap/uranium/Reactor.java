@@ -45,6 +45,7 @@ public class Reactor
     private final MultiHashMap<Attribute, Rule> dependencies = new MultiHashMap<>();
     private final ArrayDeque<Rule> queue = new ArrayDeque<>();
     private final HashSet<SemanticError> errors = new HashSet<>();
+    private final HashSet<SemanticError> attributelessDerivedErrors = new HashSet<>();
     private boolean running = false;
 
     // endregion
@@ -123,6 +124,7 @@ public class Reactor
                     list.add(cast(value));
             }
         }
+        list.addAll(attributelessDerivedErrors);
         return list;
     }
 
@@ -253,7 +255,9 @@ public class Reactor
     final void reportError (SemanticError error, Attribute affected)
     {
         if (affected == null) {
-            if (error.cause != null) errors.add(error); // otherwise these errors would be lost
+            // otherwise these errors would be lost
+            if (error.cause == null) errors.add(error);
+            else attributelessDerivedErrors.add(error);
             return;
         }
 
