@@ -5,6 +5,8 @@ import norswap.utils.Strings;
 import norswap.utils.multimap.MultiHashMap;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
 import static norswap.utils.Util.cast;
 
 /**
@@ -134,28 +138,27 @@ public class Reactor
     // =============================================================================================
 
     /**
-     * Set the value of the given attribute.
+     * Set the value of the given attribute that can be known statically, <b>before running the
+     * reactor</b>. This is not meant for use in rules (use {@link Rule#set(int, Object)} and
+     * variants).
      *
-     * <p>This should be used to set trivial attributes. It is also possible to define rules
-     * with no dependencies for more complex operations.
-     *
-     * <p>This should be called in rules themselves: the reactor will automatically set the value
-     * of rule's exported attributes once the rule has run.
+     * @throws IllegalStateException if called while the reactor is running
      */
     public void set (Attribute attribute, Object value) {
+        if (running) throw new IllegalStateException(
+            "Calling Reactor#set while the reactor is running - " +
+            "see Javadoc of that method for details.");
         attributes.put(attribute, value);
     }
 
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Set the value of the given attribute.
+     * Set the value of the given attribute that can be known statically, <b>before running the
+     * reactor</b>. This is not meant for use in rules (use {@link Rule#set(int, Object)} and
+     * variants).
      *
-     * <p>This should be used to set trivial attributes. It is also possible to define rules
-     * with no dependencies for more complex operations.
-     *
-     * <p>This should be called in rules themselves: the reactor will automatically set the value
-     * of rule's exported attributes once the rule has run.
+     * @throws IllegalStateException if called while the reactor is running
      */
     public void set (Object node, String name, Object value) {
         set(new Attribute(node, name), value);
@@ -195,37 +198,11 @@ public class Reactor
     public final void run()
     {
         running = true;
-
         attributes.forEach((k, v) ->
             dependencies.get(k).forEach(r -> r.supply(k, v)));
-
         dependencies.get(NO_DEPS).forEach(this::enqueue);
-
-        while (!queue.isEmpty())
-        {
-            Rule rule = queue.removeFirst();
-            rule.run();
-
-            for (int i = 0; i < rule.exports.length; ++i)
-            {
-                Attribute attribute = rule.exports[i];
-                Object value = rule.exportValues[i];
-
-                if (value == null)
-                    throw new IllegalStateException(String.format(
-                        "rule did not provide exported attribute %s:\n%s", attribute, rule));
-
-                Object old = attributes.putIfAbsent(attribute, value);
-
-                if (old != null)
-                    attributeRedefinitionAttempt(attribute, old, value);
-                else if (value instanceof SemanticError)
-                    reportRecordedError((SemanticError) value, attribute);
-                else
-                    supplyToDependents(attribute, value);
-            }
-        }
-
+        loopOnQueue();
+        handleMissingAttributes();
         running = false;
     }
 
@@ -238,16 +215,68 @@ public class Reactor
     // ---------------------------------------------------------------------------------------------
 
     /**
+     * Loops in the queue until it is empty, running each queued rule and propagating
+     * its exported values (which may in turn cause more rules to become enqueued).
+     */
+    private void loopOnQueue()
+    {
+        while (!queue.isEmpty()) {
+            Rule rule = queue.removeFirst();
+            rule.run();
+            for (int i = 0; i < rule.exports.length; ++i) {
+                Attribute attribute = rule.exports[i];
+                Object value = rule.exportValues[i];
+                if (value == null) throw new IllegalStateException(
+                    format("rule did not provide exported attribute %s:\n%s", attribute, rule));
+                setValue(attribute, value);
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    private void setValue (Attribute attribute, Object value)
+    {
+        Object old = attributes.putIfAbsent(attribute, value);
+
+        if (old instanceof SemanticError) {
+            // For now: skip and keep the first reported error. In the future, might want to let the
+            // user pick - but that required changing error propagation to change the whole chain.
+        } else if (old != null) {
+            attributeRedefinitionAttempt(attribute, old, value);
+        } else if (value instanceof SemanticError) {
+            SemanticError error = (SemanticError) value;
+            if (error.cause == null) errors.add(error);
+            propagateError(error, attribute);
+        } else {
+            supplyToDependents(attribute, value);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
      * Called when we attempt to redefine an attribute value. This can happen if the same attribute
      * is exported by multiple rules. The default implementation throws an {@link Error}.
      *
-     * <p>If we override this method, you can call {@link #set} and {@link #supplyToDependents} to
-     * change this behaviour. Note that prior to calling this method, the original value is kept and
-     * rules depending on this attribute have not been notified of the new value.
+     * <p>If you override this method, you can call {@link #redefine} and {@link
+     * #supplyToDependents} to change this behaviour. Note that prior to calling this method, the
+     * original value is kept and rules depending on this attribute have not been notified of the
+     * new value.
      */
-    protected void attributeRedefinitionAttempt
-    (Attribute attribute, Object oldValue, Object newValue) {
-        throw new Error("attempting to redefine: "+  attribute);
+    protected void attributeRedefinitionAttempt (Attribute attribute, Object oldV, Object newV) {
+        throw new Error("attempting to redefine: " +  attribute);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Change the value of an already-defined attribute. Meant to be called from {@link
+     * #attributeRedefinitionAttempt}
+     */
+    protected void redefine (Attribute attribute, Object value) {
+        attributes.put(attribute, value);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -260,22 +289,30 @@ public class Reactor
             else attributelessDerivedErrors.add(error);
             return;
         }
-
-        Object value = attributes.get(affected);
-        if (value != null)
-            attributeRedefinitionAttempt(affected, value, error);
-
-        reportRecordedError(error, affected);
+        setValue(affected, error);
     }
 
     // ---------------------------------------------------------------------------------------------
 
-    // Logic for reporting an error that has already been stored in `attributes`.
-    private void reportRecordedError (SemanticError error, Attribute affected)
+    /**
+     * Propagates the given {@code error} that precludes the computation of the {@code affected}
+     * attribute, by signaling an error on every exported attributes of all the rules that depend
+     * on the affected attribute.
+     *
+     * <p>For now, we don't generate errors for rules with no exported dependencies: they have no
+     * name so such an error wouldn't be informative, and the propagated error will still exist.
+     *
+     * <p>Can be called from {@link #attributeRedefinitionAttempt}. Note that if the attributes
+     * affected by the propagated error already have a value/error, then {@link
+     * #attributeRedefinitionAttempt} could be called recursively.
+     */
+    protected final void propagateError (SemanticError error, Attribute affected)
     {
-        if (error.cause == null) errors.add(error);
-        attributes.put(affected, error); // the error becomes the attribute value
-        propagateError(error, affected);
+        dependencies.get(affected).stream()
+            .flatMap(rule -> Arrays.stream(rule.exports))
+            .forEach(exported -> reportError(
+                new SemanticError("missing dependency " + affected, error, null),
+                exported));
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -286,6 +323,8 @@ public class Reactor
      *
      * <p>Call from {@link #attributeRedefinitionAttempt} to cause depending rules to see the new
      * value and re-run those that have already ran.
+     *
+     * <p>If you call this, you must have have called {@link #redefine} beforehand!
      */
     protected final void supplyToDependents (Attribute attribute, Object value) {
         dependencies.get(attribute).forEach(r -> r.supply(attribute, value));
@@ -294,20 +333,38 @@ public class Reactor
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Propagates the given {@code error} that precludes the computation of the {@code affected}
-     * attribute, by signaling an error on every exported attributes of all the rules that depend
-     * on the affected attribute.
+     * Look for rules that haven't run and process them. We exclude rules that haven't run
+     * because one of their attributes had an error value. The remaining cases should only occur
+     * when the user failed to supply an attribute's value or error (i.e. it is a bug in the
+     * user's semantic analysis logic).
      *
-     * <p>Can be called from {@link #attributeRedefinitionAttempt}. Note that if the attributes
-     * affected by the propagated error already have a value/error, then {@link
-     * #attributeRedefinitionAttempt} could be called recursively.
+     * <p>We generate errors for these missing attributes, and propagate them in the usual way.
      */
-    protected final void propagateError (SemanticError error, Attribute affected)
+    private void handleMissingAttributes()
     {
-        for (Rule dependent: dependencies.get(affected)) // propagate the error
-            for (Attribute exported: dependent.exports)
-                reportError(new SemanticError("missing dependency " + affected, error, null),
-                    exported);
+        List<Rule> untriggeredRules = dependencies.values().stream()
+            .flatMap(Collection::stream)
+            .filter(rule -> rule.unsatisfied > 0) // haven't run
+            .filter(rule -> Arrays.stream(rule.dependencies)
+                // exclude rules with error as dependencies
+                .noneMatch(dep -> attributes.get(dep) instanceof SemanticError))
+            .collect(Collectors.toList());
+
+        Set<Attribute> untriggeredExports = untriggeredRules.stream()
+            .flatMap(rule -> Arrays.stream(rule.exports))
+            .collect(Collectors.toSet());
+
+        untriggeredRules.stream()
+            .flatMap(rule -> Arrays.stream(rule.dependencies))
+            // get missing dependencies that cannot be obtained indirectly via an untriggered rule
+            .filter(dep -> attributes.get(dep) == null && !untriggeredExports.contains(dep))
+            .forEach(dep -> setValue(dep,
+                new SemanticError("missing attribute " + dep, null, dep.node)));
+
+        // Indirectly missing dependencies will still get an error through error propagation.
+
+        // No need to reprocess the queue: error propagation is instantaneous, and makes no
+        // new rules runnable.
     }
 
     // endregion
@@ -368,7 +425,7 @@ public class Reactor
             b.append(error.description);
             Object location = error.location();
             if (location != null) {
-                b.append("\n");
+                b.append("\nlocation: ");
                 b.append(printLocation.apply(location));
             }
             b.append("\n\n");

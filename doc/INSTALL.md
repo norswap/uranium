@@ -7,6 +7,9 @@ It's also possible to use [JitPack] as an alternative (detailed instructions not
 [Bintray]: https://bintray.com/norswap/maven/uranium
 [JitPack]: https://jitpack.io/#norswap/uranium
 
+**Version:** If the version in this file is not current, don't forget to replace it by a recent
+version!
+
 ## Using Gradle
 
 With the Kotlin DSL (`build.gradle.kts`):
@@ -19,7 +22,7 @@ repositories {
 
 dependencies {
     // ...
-    implementation("norswap:uranium:1.0.1-ALPHA")
+    implementation("norswap:uranium:1.0.8-ALPHA")
 }
 ```
 
@@ -33,7 +36,7 @@ repositories {
 
 dependencies {
     // ...
-    implementation 'norswap:uranium:1.0.1-ALPHA'
+    implementation 'norswap:uranium:1.0.8-ALPHA'
 }
 ```
 
@@ -56,7 +59,7 @@ In `pom.xml`:
     <dependency>
       <groupId>norswap</groupId>
       <artifactId>uranium</artifactId>
-      <version>1.0.1-ALPHA</version>
+      <version>1.0.8-ALPHA</version>
     </dependency>  
   </dependencies>
 </project>

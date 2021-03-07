@@ -75,7 +75,7 @@ public final class Rule
 
     private final Reactor reactor;
     private final Consumer<Rule> computation;
-    private int unsatisfied;
+    int unsatisfied;
 
     // ---------------------------------------------------------------------------------------------
 
