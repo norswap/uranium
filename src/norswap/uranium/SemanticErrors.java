@@ -37,7 +37,7 @@ public final class SemanticErrors
             .map(e -> "    " + e.toString())
             .collect(Collectors.joining("\n"));
 
-        return "SeamnticErrors {" + errs + "\n}";
+        return "SemanticErrors {" + errs + "\n}";
     }
 
     // ---------------------------------------------------------------------------------------------
