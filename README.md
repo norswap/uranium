@@ -64,11 +64,11 @@ Uranium is the perfect complement to [Autumn], my parsing library.
 Be sure to check out the javadoc pages for [`Rule`] and [`Reactor`] which contains **crucial** information on
 how to use the framework.
 
-[`Attribute`]: https://javadoc.jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/norswap/uranium/Attribute.html
-[`Rule`]: https://javadoc.jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/norswap/uranium/Rule.html
-[`Reactor`]: https://javadoc.jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/norswap/uranium/Reactor.html
-[`SemanticError`]: https://javadoc.jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/norswap/uranium/SemanticError.html
-[`AttributeTreeFormatter`]: https://javadoc.jitpack.io/com/github/norswap/uranium/-SNAPSHOT/javadoc/norswap/uranium/AttributeTreeFormatter.html
+[`Attribute`]: https://javadoc.io/doc/com.norswap/uranium/1.0.8-ALPHA/norswap/uranium/Attribute.html
+[`Rule`]: https://javadoc.io/doc/com.norswap/uranium/1.0.8-ALPHA/norswap/uranium/Rule.html
+[`Reactor`]: https://javadoc.io/static/com.norswap/uranium/1.0.8-ALPHA/norswap/uranium/Reactor.html
+[`SemanticError`]: https://javadoc.io/doc/com.norswap/uranium/1.0.8-ALPHA/norswap/uranium/SemanticError.html
+[`AttributeTreeFormatter`]: https://javadoc.io/doc/com.norswap/uranium/1.0.8-ALPHA/norswap/uranium/AttributeTreeFormatter.html
 
 [norswap-utils]: https://github.com/norswap/norswap-utils
-[`Walker`]: https://javadoc.jitpack.io/com/github/norswap/norswap-utils/-SNAPSHOT/javadoc/norswap/utils/visitors/Walker.html
+[`Walker`]: https://javadoc.io/doc/com.norswap/utils/1.0.8-ALPHA/norswap/utils/visitors/Walker.html
