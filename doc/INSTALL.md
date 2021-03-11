@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     // ...
-    implementation("norswap:uranium:1.0.8-ALPHA")
+    implementation("com.norswap:uranium:1.0.8-ALPHA")
 }
 ```
 
@@ -36,7 +36,7 @@ repositories {
 
 dependencies {
     // ...
-    implementation 'norswap:uranium:1.0.8-ALPHA'
+    implementation 'com.norswap:uranium:1.0.8-ALPHA'
 }
 ```
 
@@ -57,7 +57,7 @@ In `pom.xml`:
   <dependencies>
     ...
     <dependency>
-      <groupId>norswap</groupId>
+      <groupId>com.norswap</groupId>
       <artifactId>uranium</artifactId>
       <version>1.0.8-ALPHA</version>
     </dependency>  
