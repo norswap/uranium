@@ -1,11 +1,12 @@
 # Install Uranium
 
-The project's artifacts are hosted on [Bintray] and available from JCenter.
+The project's artifacts are hosted on [Maven Central], and on a public [Artifactory repository].
 
-It's also possible to use [JitPack] as an alternative (detailed instructions not provided).
+The only difference is that new releases will land on the artifactory repository a few hours
+earlier.
 
-[Bintray]: https://bintray.com/norswap/maven/uranium
-[JitPack]: https://jitpack.io/#norswap/uranium
+[Maven Central]: https://search.maven.org/artifact/com.norswap/uranium/
+[Artifactory repository]: https://norswap.jfrog.io/artifactory/maven/
 
 **Version:** If the version in this file is not current, don't forget to replace it by a recent
 version!
@@ -17,7 +18,11 @@ With the Kotlin DSL (`build.gradle.kts`):
 ```kotlin
 repositories {
     // ...
-    jcenter()
+    mavenCentral()
+    // and/or:
+    maven {
+        url = uri("https://norswap.jfrog.io/artifactory/maven")
+    }
 }
 
 dependencies {
@@ -31,7 +36,11 @@ With the Groovy DSL (`build.gradle`):
 ```groovy
 repositories {
     // ...
-    jcenter()
+    mavenCentral()
+    // and/or:
+    maven {
+        url 'https://norswap.jfrog.io/artifactory/maven'
+    }
 }
 
 dependencies {
@@ -49,9 +58,10 @@ In `pom.xml`:
   ...
   <repositories>
     ...
+    <!-- no repository declaration needed for using Maven Central -->
     <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
+        <id>artifactory-norswap</id>
+        <url>https://norswap.jfrog.io/artifactory/maven</url>
     </repository>
   </repositories>
   <dependencies>
