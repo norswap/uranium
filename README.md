@@ -24,6 +24,13 @@ Uranium is the perfect complement to [Autumn], my parsing library.
 
 [Autumn]: https://github.com/norswap/autumn
 
+You can see an example of Uranium in action in the demo language [Sigh] ([SemanticAnalysis.java],
+[SemanticAnalysisTests.java]).
+
+[Sigh]: https://github.com/norswap/sigh
+[SemanticAnalysis.java]: https://github.com/norswap/sigh/blob/master/src/norswap/sigh/SemanticAnalysis.java
+[SemanticAnalysisTests.java]: https://github.com/norswap/sigh/blob/master/test/SemanticAnalysisTests.java
+
 ## Key Concepts
 
 (Rough draft for now.)
@@ -64,11 +71,14 @@ Uranium is the perfect complement to [Autumn], my parsing library.
 Be sure to check out the javadoc pages for [`Rule`] and [`Reactor`] which contains **crucial** information on
 how to use the framework.
 
+Your implementation of semantic analysis can be unit-tested using the [`UraniumTestFixture`] class.
+
 [`Attribute`]: https://javadoc.io/doc/com.norswap/uranium/latest/norswap/uranium/Attribute.html
 [`Rule`]: https://javadoc.io/doc/com.norswap/uranium/latest/norswap/uranium/Rule.html
 [`Reactor`]: https://javadoc.io/static/com.norswap/uranium/latest/norswap/uranium/Reactor.html
 [`SemanticError`]: https://javadoc.io/doc/com.norswap/uranium/latest/norswap/uranium/SemanticError.html
 [`AttributeTreeFormatter`]: https://javadoc.io/doc/com.norswap/uranium/latest/norswap/uranium/AttributeTreeFormatter.html
+[`UraniumTestFixture`]: https://javadoc.io/doc/com.norswap/uranium/latest/norswap/uranium/UraniumTestFixture.html
 
 [norswap-utils]: https://github.com/norswap/norswap-utils
 [`Walker`]: https://javadoc.io/doc/com.norswap/utils/latest/norswap/utils/visitors/Walker.html
