@@ -25,11 +25,12 @@ Uranium is the perfect complement to [Autumn], my parsing library.
 [Autumn]: https://github.com/norswap/autumn
 
 You can see an example of Uranium in action in the demo language [Sigh] ([SemanticAnalysis.java],
-[SemanticAnalysisTests.java]).
+[SemanticAnalysisTests.java]), and [here is a code review][review] of that code.
 
 [Sigh]: https://github.com/norswap/sigh
 [SemanticAnalysis.java]: https://github.com/norswap/sigh/blob/master/src/norswap/sigh/SemanticAnalysis.java
 [SemanticAnalysisTests.java]: https://github.com/norswap/sigh/blob/master/test/SemanticAnalysisTests.java
+[review]: https://www.youtube.com/watch?v=AgnVQWw-4gk&list=PLOech0kWpH8-njQpmSNGSiQBPUvl8v3IM
 
 ## Key Concepts
 
