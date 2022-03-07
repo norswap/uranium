@@ -127,9 +127,20 @@ public final class Rule
 
     /** Called by the Reactor to supply a dependency value. */
     void supply (Attribute dependency, Object value) {
-        int i = NArrays.indexOf(dependencies, dependency);
-        dependencyValues[i] = value;
-        if (--unsatisfied <= 0) { // could be run multiple times
+        // Supply the value to all dependencies that match the supplied attribute.
+        // Sometimes, multiple equal dependencies can occur (example: left and right types in a
+        // binary expression, where the left and right type decls happen to point to the same class).
+        // In this case, we want to supply the value to all of them.
+        for (int i = 0; i < dependencies.length; ++i){
+            if (Objects.equals(dependencies[i], dependency) && dependencyValues[i] == null) {
+                unsatisfied--;
+
+                // Supply the value
+                dependencyValues[i] = value;
+            }
+        }
+
+        if (unsatisfied <= 0) { // could be run multiple times
             unsatisfied = 0;
             reactor.enqueue(this);
         }
