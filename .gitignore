@@ -15,6 +15,7 @@
 
 # IntelliJ Generated files
 .idea/**/contentModel.xml
+.idea/**/libraries-with-intellij-classes.xml
 
 # IntelliJ Sensitive or high-churn files
 .idea/**/dataSources/
