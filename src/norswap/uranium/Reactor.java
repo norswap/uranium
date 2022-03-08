@@ -138,13 +138,14 @@ public class Reactor
     // =============================================================================================
 
     /**
-     * Set the value of the given attribute that can be known statically, <b>before running the
-     * reactor</b>. This is not meant for use in rules (use {@link Rule#set(int, Object)} and
-     * variants).
+     * Set the value (non-null) of the given attribute that can be known statically, <b>before
+     * running the reactor</b>. This is not meant for use in rules (use {@link Rule#set(int,
+     * Object)} and variants).
      *
      * @throws IllegalStateException if called while the reactor is running
      */
     public void set (Attribute attribute, Object value) {
+        if (value == null) throw new IllegalArgumentException("value can't be null");
         if (running) throw new IllegalStateException(
             "Calling Reactor#set while the reactor is running - " +
             "see Javadoc of that method for details.");
@@ -154,9 +155,9 @@ public class Reactor
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Set the value of the given attribute that can be known statically, <b>before running the
-     * reactor</b>. This is not meant for use in rules (use {@link Rule#set(int, Object)} and
-     * variants).
+     * Set the value (non-null) of the given attribute that can be known statically, <b>before
+     * running the reactor</b>. This is not meant for use in rules (use {@link Rule#set(int,
+     * Object)} and variants).
      *
      * @throws IllegalStateException if called while the reactor is running
      */
@@ -282,6 +283,7 @@ public class Reactor
      * #attributeRedefinitionAttempt}
      */
     protected void redefine (Attribute attribute, Object value) {
+        if (value == null) throw new IllegalArgumentException("value can't be null");
         attributes.put(attribute, value);
     }
 

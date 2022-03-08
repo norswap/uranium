@@ -29,7 +29,7 @@ import static norswap.utils.Util.cast;
  * <p>A rule must supply the value of all its exported attributes (by means of one of the {@link
  * #set} methods), or signal that a semantic error prevented their computation (by means of one of
  * the {@link #error} or {@link #errorFor} methods). Failure to do so will cause the {@link
- * Reactor} to throw an exception.
+ * Reactor} to throw an exception. Supplies values may not be {@code null}.
  *
  * <p>When an error is signaled for an attribute, that error will be set as the value of attribute.
  * The error will be propagated (signaled) to rules that depend on the attribute (resulting to all
@@ -43,7 +43,7 @@ import static norswap.utils.Util.cast;
  * attribute. However, this can be made possible by overriding the {@link
  * Reactor#attributeRedefinitionAttempt} (which by default throws an exception). This can notably
  * be used to enable incremental attribute computation, where each rule can be rerun as its
- * dependency values change. In the default configuration, each rule is this guaranteed to be ran
+ * dependency values change. In the default configuration, each rule is guaranteed to be ran
  * at most once.
  *
  * <h2>Lazy/Chained Rules</h2>
@@ -60,7 +60,8 @@ import static norswap.utils.Util.cast;
  * <p>However, it is worth paying attention to reported errors when using lazy rules. In particular,
  * when an error early in a rule prevents the instantiation of a lazy rule, then you should signal
  * that the error prevents the computation of the lazy rule's exports, using one of the {@link
- * #errorFor} methods. You can also instantiate the rule regardless, and let the error be propagated to it.
+ * #errorFor} methods. You can also instantiate the rule regardless, and let the error be
+ * propagated to it.
  */
 public final class Rule
 {
@@ -127,11 +128,20 @@ public final class Rule
 
     /** Called by the Reactor to supply a dependency value. */
     void supply (Attribute dependency, Object value) {
-        int i = NArrays.indexOf(dependencies, dependency);
-        dependencyValues[i] = value;
-        if (--unsatisfied <= 0) { // could be run multiple times
-            unsatisfied = 0;
-            reactor.enqueue(this);
+        // the same attribute might be present multiple times
+        for (int i = 0; i < dependencies.length; i++) {
+            if (dependencies[i].equals(dependency)) {
+                Object old = dependencyValues[i];
+                dependencyValues[i] = value;
+                // Because of redefinitions, this could be run multiple times, only decrement if
+                // this is not a redefinition, so as not to skip a missing dependency.
+                if (old == null)
+                    -- unsatisfied;
+                if (unsatisfied == 0)
+                    // In case of redefinition, the rule could fire multiple times.
+                    // This is intended behaviour.
+                    reactor.enqueue(this);
+            }
         }
     }
 
@@ -176,10 +186,11 @@ public final class Rule
     // =============================================================================================
 
     /**
-     * Sets the value of the given export.
+     * Sets the value of the given export, which cannot be null.
      */
     public void set (Attribute export, Object value)
     {
+        if (value == null) throw new IllegalArgumentException("value can't be null");
         int i = NArrays.indexOf(exports, export);
         exportValues[i] = value;
     }
@@ -187,7 +198,7 @@ public final class Rule
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Sets the value of the given export.
+     * Sets the value of the given export, which cannot be null.
      */
     public void set (Object node, String name, Object value) {
         set(new Attribute(node, name), value);
@@ -196,9 +207,10 @@ public final class Rule
     // ---------------------------------------------------------------------------------------------
 
     /**
-     * Set the value of the dependency at the given index.
+     * Set the value of the dependency at the given index, which cannot be null.
      */
     public void set (int index, Object value) {
+        if (value == null) throw new IllegalArgumentException("value can't be null");
         exportValues[index] = value;
     }
 
