@@ -1,8 +1,3 @@
-import com.jfrog.bintray.gradle.BintrayExtension.PackageConfig
-import org.jfrog.gradle.plugin.artifactory.dsl.DoubleDelegateWrapper
-import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
-import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
-
 // === PLUGINS =====================================================================================
 
 plugins {
@@ -10,8 +5,6 @@ plugins {
     idea
     signing
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.5"
-    id("com.jfrog.artifactory") version "4.21.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
     // Using the lastest 5.3, I run into: https://issuetracker.google.com/issues/166468915
     id("io.freefair.javadoc-links") version "5.1.1"
@@ -103,39 +96,6 @@ signing {
     sign(publishing.publications[project.name])
 }
 
-// Use `gradle bintrayUpload` target to deploy to Bintray.
-bintray {
-    user = System.getenv("BINTRAY_USER")
-    key = System.getenv("BINTRAY_KEY")
-    publish = true
-    override = true // enables overriding versions
-    pkg(closureOf<PackageConfig> {
-        repo = "maven"
-        name = project.name
-        vcsUrl = vcs
-        desc = project.description
-        // https://youtrack.jetbrains.com/issue/KT-33879
-        setLicenses("BSD 3-Clause")
-        setPublications(project.name)
-    })
-}
-
-// Use `gradle artifactoryPublish` target to deploy to Artifactory.
-artifactory {
-    setContextUrl("https://norswap.jfrog.io/artifactory")
-    publish(closureOf<PublisherConfig> {
-        setContextUrl("https://norswap.jfrog.io/artifactory")
-        repository(closureOf<DoubleDelegateWrapper> {
-            invokeMethod("setRepoKey", project.name)
-            invokeMethod("setUsername", System.getenv("JFROG_USER"))
-            invokeMethod("setPassword", System.getenv("JFROG_KEY"))
-        })
-        defaultsClosure = closureOf<ArtifactoryTask> {
-            publications(project.name)
-        }
-    })
-}
-
 // Use `gradle publishToSonatype closeAndReleaseSonatypeStagingDirectory` to deploy to Maven Central.
 nexusPublishing {
     repositories {
@@ -152,9 +112,6 @@ nexusPublishing {
 
 // Deploy to all locations.
 tasks.register("deploy") {
-    dependsOn("bintrayUpload")
-    dependsOn("artifactoryPublish")
-
     // NOTE: must be changed if we only want to publish a single publications.
     val publishToSonatype = tasks["publishToSonatype"]
     val closeAndReleaseSonatype = tasks["closeAndReleaseSonatypeStagingRepository"]
@@ -167,16 +124,11 @@ tasks.register("deploy") {
 
 repositories {
     mavenCentral()
-    mavenCentral()
-    maven {
-        url = uri("https://norswap.jfrog.io/artifactory/maven")
-    }
 }
 
 dependencies {
-    implementation("com.norswap:utils:2.1.9")
+    implementation("com.norswap:utils:2.1.11")
     implementation("com.norswap:autumn:1.2.0")
-    testImplementation("org.testng:testng:6.14.3")
 }
 
 // =================================================================================================¯
