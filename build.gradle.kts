@@ -111,6 +111,7 @@ nexusPublishing {
 }
 
 // Deploy to all locations.
+// Deploy to Maven Central
 tasks.register("deploy") {
     // NOTE: must be changed if we only want to publish a single publications.
     val publishToSonatype = tasks["publishToSonatype"]
