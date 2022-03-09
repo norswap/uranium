@@ -13,7 +13,7 @@ plugins {
 // === MAIN BUILD DETAILS ==========================================================================
 
 group = "com.norswap"
-version = "1.0.10-ALPHA"
+version = "1.0.11-ALPHA"
 description = "Semantic analysis framework"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -110,7 +110,6 @@ nexusPublishing {
     }
 }
 
-// Deploy to all locations.
 // Deploy to Maven Central
 tasks.register("deploy") {
     // NOTE: must be changed if we only want to publish a single publications.
@@ -128,7 +127,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.norswap:utils:2.1.11")
+    implementation("com.norswap:utils:2.1.12")
     implementation("com.norswap:autumn:1.2.0")
 }
 
