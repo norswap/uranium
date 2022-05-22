@@ -37,5 +37,8 @@
 *.iml
 *.ipr
 
+# IntelliJ seemingly useless stuff
+.idea/misc.xml
+
 # Intelllij Maven
 .idea/**/gradle.xml
