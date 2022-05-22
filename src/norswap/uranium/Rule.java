@@ -1,6 +1,7 @@
 package norswap.uranium;
 
 import norswap.utils.NArrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -137,7 +138,7 @@ public final class Rule
                 // this is not a redefinition, so as not to skip a missing dependency.
                 if (old == null)
                     -- unsatisfied;
-                if (unsatisfied == 0)
+                if (unsatisfied == 0 && !Objects.equals(old, value))
                     // In case of redefinition, the rule could fire multiple times.
                     // This is intended behaviour.
                     reactor.enqueue(this);
